@@ -94,16 +94,18 @@ size_t istrfixlen(char *istr) {
         return -1;
     }
 
-    uint32_t length = istring_get_length(istr);
-
-
-
-
+    
+    int first_non_printable = istring_get_length(istr);
     for (int n=0; n<length; ++n) {
+        if (istr[n] < 32 && n < first_non_printable) {
+            first_non_printable = n;
+        }
         if (istr[n] == '\0') {
             istring_set_length(istr, n);
-            return;
+            return n-1;
         }
+        
     }
-
+    istr[first_non_printable] = '\0';
+    return first_non_printable-1;
 }
