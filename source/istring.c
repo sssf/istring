@@ -94,7 +94,7 @@ size_t istrfixlen(char *istr) {
         return -1;
     }
 
-    
+
     int first_non_printable, length = istring_get_length(istr);
     for (int n=0; n<length; ++n) {
         if (istr[n] < 32 && n < first_non_printable) {
@@ -104,14 +104,14 @@ size_t istrfixlen(char *istr) {
             istring_set_length(istr, n);
             return n-1;
         }
-        
+
     }
     istr[first_non_printable] = '\0';
     return first_non_printable-1;
 }
 
 
-/* 
+/*
  * Sets the length of an istring and inserts a corresponding '\0'
  * character. If the length argument is out of bounds for the string,
  * a new istring should be returned with the contents of the original
@@ -124,7 +124,7 @@ char* istrslen(char *istr, size_t length) {
 /*
  * For definitions, see the manual page of respective function on the
  * solaris system and the assignment text.
- * 
+ *
  * Think about whether having O(1) access to the length can be used to
  * improve the implementations if the string.h equivalents and use
  * that to guide your implementations!
