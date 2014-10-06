@@ -6,7 +6,7 @@
 /*
  * Returns a new istring instance created from supplied
  * string. Returns NULL if out of memory. Returns NULL string if
- * argument str is NULL. 
+ * argument str is NULL.
  */
 char *istring_mk(const char* str);
 
@@ -34,7 +34,7 @@ char *istring_to_string(const char *istr);
  */
 size_t istrfixlen(char *istr);
 
-/* 
+/*
  * Sets the length of an istring and inserts a corresponding '\0'
  * character. If the length argument is out of bounds for the string,
  * a new istring should be returned with the contents of the original
@@ -46,7 +46,7 @@ char* istrslen(char *istr, size_t length);
 /*
  * For definitions, see the manual page of respective function on the
  * solaris system and the assignment text.
- * 
+ *
  * Think about whether having O(1) access to the length can be used to
  * improve the implementations if the string.h equivalents and use
  * that to guide your implementations!
