@@ -1,0 +1,4 @@
+istring
+=======
+
+ioopm istring assignment
