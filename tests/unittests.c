@@ -27,7 +27,6 @@ int clean_suite_2(void)
 
 void testISTRING_MK(void)
 {
-    /*
   char *str1 = istring_mk(NULL);
   CU_ASSERT(str1 == NULL);
   char str2[] = "foo";
@@ -42,33 +41,32 @@ void testISTRING_MK(void)
   CU_ASSERT(strcmp(str2, str3) > 0);
   istring_rm(str1);
   istring_rm(str3);
-  */
 }
 
 void testISTRING_RM(void)
 {
-  //istring_rm(istring_mk("test"));
+  istring_rm(istring_mk("test"));
 }
 
 void testISTRLEN(void)
 {
-//  char *str1 = istring_mk("spam");
-//  char *str2 = istring_mk("ekieki");
-//  CU_ASSERT(istrlen(str1) == 4);
-//  CU_ASSERT(istrlen(str2) == 6);
-//  //START(str2)->length = 3;
-//  //CU_ASSERT(istrlen(str2) == 3);
-//  CU_ASSERT(strlen(str1) == 4);
-//  CU_ASSERT(strlen(str2) == 6);
-//  istring_rm(str1);
-//  istring_rm(str2);
+  char *str1 = istring_mk("spam");
+  char *str2 = istring_mk("ekieki");
+  CU_ASSERT(istrlen(str1) == 4);
+  CU_ASSERT(istrlen(str2) == 6);
+  //START(str2)->length = 3;
+  //CU_ASSERT(istrlen(str2) == 3);
+  CU_ASSERT(strlen(str1) == 4);
+  CU_ASSERT(strlen(str2) == 6);
+  istring_rm(str1);
+  istring_rm(str2);
 }
 
 void testISTRING_TO_STRING(void)
 {
-//  char *str1 = istring_mk("spam");
-//  CU_ASSERT(strcmp(istring_to_string(str1), "spam") == 0);
-//  istring_rm(str1);
+  char *str1 = istring_mk("spam");
+  CU_ASSERT(strcmp(istring_to_string(str1), "spam") == 0);
+  istring_rm(str1);
 }
 
 
@@ -86,54 +84,54 @@ void testISTRNCAT(void)
 
 void testISTRCHR(void)
 {
-//  char *str = istring_mk("spam spam bacon spam");
-//  CU_ASSERT(istrchr(str, 's') == str);
-//  CU_ASSERT(istrchr(str, 'b') == str + 10);
-//  CU_ASSERT(istrchr(str, 'c') == str + 12);
-//  CU_ASSERT(istrchr(str, 's') == str);
-//  CU_ASSERT(istrrchr(str, '\0') == str + 20);
-//  CU_ASSERT(istrchr(str, 'x') == NULL);
-//  istring_rm(str);
+  char *str = istring_mk("spam spam bacon spam");
+  CU_ASSERT(istrchr(str, 's') == str);
+  CU_ASSERT(istrchr(str, 'b') == str + 10);
+  CU_ASSERT(istrchr(str, 'c') == str + 12);
+  CU_ASSERT(istrchr(str, 's') == str);
+  CU_ASSERT(istrrchr(str, '\0') == str + 20);
+  CU_ASSERT(istrchr(str, 'x') == NULL);
+  istring_rm(str);
 }
 
 void testISTRRCHR(void)
 {
-//  char *str = istring_mk("spam spam bacon spam");
-//  CU_ASSERT(istrrchr(str, 's') == str + 16);
-//  CU_ASSERT(istrrchr(str, 'b') == str + 10);
-//  CU_ASSERT(istrrchr(str, 'c') == str + 12);
-//  CU_ASSERT(istrrchr(str, 's') == str + 16);
-//  CU_ASSERT(istrrchr(str, '\0') == str + 20);
-//  CU_ASSERT(istrrchr(str, 'x') == NULL);
-//  istring_rm(str);
+  char *str = istring_mk("spam spam bacon spam");
+  CU_ASSERT(istrrchr(str, 's') == str + 16);
+  CU_ASSERT(istrrchr(str, 'b') == str + 10);
+  CU_ASSERT(istrrchr(str, 'c') == str + 12);
+  CU_ASSERT(istrrchr(str, 's') == str + 16);
+  CU_ASSERT(istrrchr(str, '\0') == str + 20);
+  CU_ASSERT(istrrchr(str, 'x') == NULL);
+  istring_rm(str);
 }
 
 void testISTRCMP(void)
 {
-//  char *str1 = istring_mk("spam");
-//  char *str2 = istring_mk("spam");
-//  char *str3 = istring_mk("Spam");
-//  CU_ASSERT(istrcmp(str1, str1) == 0);
-//  CU_ASSERT(istrcmp(str1, str2) == 0);
-//  CU_ASSERT(istrcmp(str2, str3) > 0);
-//  CU_ASSERT(istrcmp(str3, str2) < 0);
-//  istring_rm(str1);
-//  istring_rm(str2);
-//  istring_rm(str3);
+  char *str1 = istring_mk("spam");
+  char *str2 = istring_mk("spam");
+  char *str3 = istring_mk("Spam");
+  CU_ASSERT(istrcmp(str1, str1) == 0);
+  CU_ASSERT(istrcmp(str1, str2) == 0);
+  CU_ASSERT(istrcmp(str2, str3) > 0);
+  CU_ASSERT(istrcmp(str3, str2) < 0);
+  istring_rm(str1);
+  istring_rm(str2);
+  istring_rm(str3);
 }
 
 void testISTRNCMP(void)
 {
-//  char *str1 = istring_mk("spam ");
-//  char *str2 = istring_mk("spam");
-//  char *str3 = istring_mk("Spam");
-//  CU_ASSERT(istrncmp(str1, str2, 4) == 0);
-//  CU_ASSERT(istrncmp(str1, str2, 5) > 0);
-//  CU_ASSERT(istrncmp(str2, str3, 4) > 0);
-//  CU_ASSERT(istrncmp(str3, str2, 4) < 0);
-//  istring_rm(str1);
-//  istring_rm(str2);
-//  istring_rm(str3);
+  char *str1 = istring_mk("spam ");
+  char *str2 = istring_mk("spam");
+  char *str3 = istring_mk("Spam");
+  CU_ASSERT(istrncmp(str1, str2, 4) == 0);
+  CU_ASSERT(istrncmp(str1, str2, 5) > 0);
+  CU_ASSERT(istrncmp(str2, str3, 4) > 0);
+  CU_ASSERT(istrncmp(str3, str2, 4) < 0);
+  istring_rm(str1);
+  istring_rm(str2);
+  istring_rm(str3);
 }
 
 void testISTRCPY(void)
