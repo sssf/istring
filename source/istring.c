@@ -5,7 +5,6 @@
 
 
 
-
 #define SIZE_OF_SIZE sizeof(uint32_t)
 #define START(ptr)  (ptr-SIZE_OF_SIZE)
 #define STRING(ptr) (ptr+SIZE_OF_SIZE)
@@ -108,7 +107,3 @@ size_t istrfixlen(char *istr) {
     }
 
 }
-
-
-
-
