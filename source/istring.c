@@ -95,7 +95,7 @@ size_t istrfixlen(char *istr) {
     }
 
     
-    int first_non_printable = istring_get_length(istr);
+    int first_non_printable, length = istring_get_length(istr);
     for (int n=0; n<length; ++n) {
         if (istr[n] < 32 && n < first_non_printable) {
             first_non_printable = n;
@@ -118,7 +118,8 @@ size_t istrfixlen(char *istr) {
  * string. The last character of the original string will be repeated
  * to fill the string to its given length.
  */
-char* istrslen(char *istr, size_t length) { return NULL; }
+char* istrslen(char *istr, size_t length) {
+ return NULL; }
 
 /*
  * For definitions, see the manual page of respective function on the
@@ -130,9 +131,9 @@ char* istrslen(char *istr, size_t length) { return NULL; }
  */
 char *istrchr(const char *s, int c) { return NULL; }
 char *istrrchr(const char *s, int c) { return NULL; }
-int istrcmp(const char *s1, const char *s2) { return NULL; }
-int istrncmp(const char *s1, const char *s2, size_t n) { return NULL; }
-size_t istrlen(const char *s) { return NULL; }
+int istrcmp(const char *s1, const char *s2) { return 42; }
+int istrncmp(const char *s1, const char *s2, size_t n) { return 42; }
+size_t istrlen(const char *s) { return 42; }
 
 /*
  * I nedanstående funktioner är dst en pekare till en vanlig
