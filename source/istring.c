@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <assert.h>
 
 
 
@@ -28,8 +29,9 @@ char *istring_mk(const char* str) {
     if (str == NULL) {
         return NULL;
     }
-    size_t size = strlen(str);
-    // TODO: add NULL AT END
+    // dont forget the '\0'
+    size_t size = strlen(str) + 1;
+
     // allocate memory and clear it
     char *istr = malloc(SIZE_OF_SIZE + (size*sizeof(char)));
     memset(istr, 0, SIZE_OF_SIZE + (size*sizeof(char)));
@@ -39,8 +41,9 @@ char *istring_mk(const char* str) {
     }
     istr = STRING(istr);
 
-    istring_set_length(istr, size);
+    istring_set_length(istr, size-1);
     strcpy(istr, str);
+    istr[size] = '\0';
 
     return istr;
 }
@@ -89,6 +92,8 @@ char *istring_to_string(const char *istr) {
  * This function is useful when istrings have been manipulated as
  * regular C strings, to reestablish the length invariant.
  */
+// TODO: add tests for this!!!
+// FIXME: most likly wrong because milo wrote this!!!
 size_t istrfixlen(char *istr) {
     if (istr == NULL) {
         return -1;
@@ -117,9 +122,38 @@ size_t istrfixlen(char *istr) {
  * a new istring should be returned with the contents of the original
  * string. The last character of the original string will be repeated
  * to fill the string to its given length.
+ * NOTE: if istr is NULL return NULL
  */
 char* istrslen(char *istr, size_t length) {
- return NULL; }
+
+    if (istr == NULL) {
+        return NULL;
+    }
+
+    size_t old_length = istring_get_length(istr);
+
+    // new length <= old length
+    if (length <= old_length) {
+        istring_set_length(istr, length);
+        istr[length] = '\0';
+        return istr;
+    }
+
+    // new length > old length
+    char new_string[length+1];
+    for (int n=0; n < length; ++n) {
+        if (n < old_length) {
+            new_string[n] = istr[n];
+        }
+        else {
+            new_string[n] = istr[old_length-1];
+        }
+    }
+    // NULL terminate the string
+    new_string[length] = '\0';
+
+    return istring_mk(new_string);
+}
 
 /*
  * For definitions, see the manual page of respective function on the
@@ -129,11 +163,56 @@ char* istrslen(char *istr, size_t length) {
  * improve the implementations if the string.h equivalents and use
  * that to guide your implementations!
  */
-char *istrchr(const char *s, int c) { return NULL; }
-char *istrrchr(const char *s, int c) { return NULL; }
-int istrcmp(const char *s1, const char *s2) { return 42; }
-int istrncmp(const char *s1, const char *s2, size_t n) { return 42; }
-size_t istrlen(const char *s) { return 42; }
+char *istrchr(const char *istr, int c) {
+    assert(istr != NULL);
+
+    int n = 0;
+    int length = istring_get_length(istr);
+    while (n <= length) {
+        if (istr[n] == c) {
+            return (char*)&istr[n];
+        }
+        ++n;
+    }
+    return NULL;
+}
+// TODO: YES O(1) access to the length helps
+char *istrrchr(const char *istr, int c) {
+    assert(istr != NULL);
+
+    int n = istring_get_length(istr);
+    while (n >= 0) {
+        if (istr[n] == c) {
+            return (char*)&istr[n];
+        }
+        --n;
+    }
+    return NULL;
+}
+
+// THE O(1) access to length doesn't help here
+int istrcmp(const char *istr1, const char *istr2) {
+    assert(istr1 != NULL);
+    assert(istr2 != NULL);
+    return strcmp(istr1, istr2);
+}
+
+int istrncmp(const char *istr1, const char *istr2, size_t n) {
+    assert(istr1 != NULL);
+    assert(istr2 != NULL);
+
+    return strncmp(istr1, istr2, n);
+}
+
+/* TODO: fix documentation
+ * istrlen - calculate the length of a string
+ * The function calculates the length of the string istr, excluding the terminating null byte ('\0').
+ * returns the number of bytes in the string istr.
+ */
+size_t istrlen(const char *istr) {
+    assert(istr != NULL);
+    return istring_get_length(istr);
+}
 
 /*
  * I nedanstående funktioner är dst en pekare till en vanlig
@@ -141,8 +220,14 @@ size_t istrlen(const char *s) { return 42; }
  * "konverteras" till en istring av funktionerna, d.v.s. efter att
  * t.ex. istrcpy anropats bör man vid anropsplatsen göra dst =
  * STRING(dst) för att hoppa över längd-delen av strängen.
-*/
+ */
 char *istrcpy(char *dst, const char *src) { return NULL; }
 char *istrncpy(char *dst, const char *src, size_t n) { return NULL; }
 char *istrcat(char *dst, const char *src) { return NULL; }
 char *istrncat(char *dst, const char *src, size_t n) { return NULL; }
+
+
+
+
+
+// TODO: #undef our macros
