@@ -31,7 +31,7 @@ void testISTRING_MK(void)
     CU_ASSERT(str1 == NULL);
     char str2[] = "foo";
     char *str3 = istring_mk(str2);
-    CU_ASSERT(strlen(str3) == strlen(str2));
+    CU_ASSERT(istrlen(str3) == strlen(str2));
     CU_ASSERT(strcmp(str2, str3)  == 0);
     CU_ASSERT(str3[0]  == 'f');
     CU_ASSERT(str3[1]  == 'o');
@@ -65,7 +65,7 @@ void testISTRLEN(void)
 void testISTRING_TO_STRING(void)
 {
     char *str1 = istring_mk("spam");
-    CU_ASSERT(strcmp(istring_to_string(str1), "spam") == 0);
+    CU_ASSERT(strcmp(istring_to_string(str1), "spam") == 0);  // FIXME: Stupid test leaks memory!!!
     istring_rm(str1);
 }
 
@@ -136,7 +136,21 @@ void testISTRNCMP(void)
 
 void testISTRCPY(void)
 {
-    
+    /*
+    char* s = "babak";
+    char b[100];
+    memset(b, 0, sizeof(char)* 100);
+    char* res = strcpy(b, s);
+    CU_ASSERT(strcmp(s, res) == 0);
+    CU_ASSERT(strlen(s) == strlen(res));
+*/
+    char* s = istring_mk("babak");
+    char b[100];
+    memset(b, 0, sizeof(char)* 100);
+    char* res = istrcpy(b, s);
+    CU_ASSERT(istrcmp(s, res) == 0);
+    CU_ASSERT(istrlen(s) == istrlen(res));
+
 
     // You must implement your own!
     //CU_FAIL("Test not implemented yet");

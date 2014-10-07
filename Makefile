@@ -24,6 +24,7 @@ beautify:
 	astyle -A7 source/*.c source/*.h tests/*.c tests/*.h
 
 test: tests/unittests.c source/istring.c source/istring.h
+	mkdir -p bin
 	$(C_COMPILER) $(C_OPTIONS) tests/unittests.c source/istring.c -o bin/unittests -lcunit
 	./bin/unittests
 

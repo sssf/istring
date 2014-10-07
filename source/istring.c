@@ -30,20 +30,21 @@ char *istring_mk(const char* str) {
         return NULL;
     }
     // dont forget the '\0'
-    size_t size = strlen(str) + 1;
+    size_t length = strlen(str);
+    size_t alloc_size = length + 1;
 
     // allocate memory and clear it
-    char *istr = malloc(SIZE_OF_SIZE + (size*sizeof(char)));
-    memset(istr, 0, SIZE_OF_SIZE + (size*sizeof(char)));
+    char *istr = malloc(SIZE_OF_SIZE + (alloc_size*sizeof(char)));
+    memset(istr, 0, SIZE_OF_SIZE + (alloc_size*sizeof(char)));
 
     if (istr == NULL) {
         return NULL;
     }
     istr = STRING(istr);
 
-    istring_set_length(istr, size-1);
+    istring_set_length(istr, length);
     strcpy(istr, str);
-    istr[size] = '\0';
+    istr[length] = '\0';
 
     return istr;
 }
@@ -228,6 +229,8 @@ char *istrcpy(char *dst, const char *src) {
     strcpy(istr, src);
     istrfixlen(istr);
 
+    //printf("\ninside: %s = %s\n", istr, src);
+
     return istr;
 }
 
@@ -239,6 +242,8 @@ char *istrncpy(char *dst, const char *src, size_t n) {
 
     return istr;
 }
+
+
 char *istrcat(char *dst, const char *src) { return NULL; }
 char *istrncat(char *dst, const char *src, size_t n) { return NULL; }
 
