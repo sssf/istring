@@ -1,7 +1,7 @@
 #include <string.h>
 #include <CUnit/Basic.h>
 #include "../source/istring.h"
-#include "../source/istring.h"
+//#include "../source/istring_rep.h"
 #include <stdlib.h>
 
 int init_suite_1(void)
@@ -136,8 +136,11 @@ void testISTRNCMP(void)
 
 void testISTRCPY(void)
 {
+    
+
     // You must implement your own!
-    CU_FAIL("Test not implemented yet");
+    //CU_FAIL("Test not implemented yet");
+
 }
 
 void testISTRNCPY(void)

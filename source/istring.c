@@ -194,6 +194,7 @@ char *istrrchr(const char *istr, int c) {
 int istrcmp(const char *istr1, const char *istr2) {
     assert(istr1 != NULL);
     assert(istr2 != NULL);
+
     return strcmp(istr1, istr2);
 }
 
@@ -221,8 +222,23 @@ size_t istrlen(const char *istr) {
  * t.ex. istrcpy anropats bör man vid anropsplatsen göra dst =
  * STRING(dst) för att hoppa över längd-delen av strängen.
  */
-char *istrcpy(char *dst, const char *src) { return NULL; }
-char *istrncpy(char *dst, const char *src, size_t n) { return NULL; }
+char *istrcpy(char *dst, const char *src) {
+
+    char *istr = STRING(dst);
+    strcpy(istr, src);
+    istrfixlen(istr);
+
+    return istr;
+}
+
+char *istrncpy(char *dst, const char *src, size_t n) {
+
+    char *istr = STRING(dst);
+    strncpy(istr, src, n);
+    istrfixlen(istr);
+
+    return istr;
+}
 char *istrcat(char *dst, const char *src) { return NULL; }
 char *istrncat(char *dst, const char *src, size_t n) { return NULL; }
 
