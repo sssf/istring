@@ -9,6 +9,8 @@
 #define SIZE_OF_SIZE sizeof(uint32_t)
 #define START(ptr)  (ptr-SIZE_OF_SIZE)
 #define STRING(ptr) (ptr+SIZE_OF_SIZE)
+
+
 //#define STRING_SIZE(str) (*(uint32_t*)START(str))
 
 typedef char istring;
@@ -29,6 +31,7 @@ char *istring_mk(const char* str) {
     if (str == NULL) {
         return NULL;
     }
+
     // dont forget the '\0'
     size_t length = strlen(str);
     size_t alloc_size = length + 1;
@@ -40,6 +43,7 @@ char *istring_mk(const char* str) {
     if (istr == NULL) {
         return NULL;
     }
+
     istr = STRING(istr);
 
     istring_set_length(istr, length);
@@ -94,26 +98,31 @@ char *istring_to_string(const char *istr) {
  * regular C strings, to reestablish the length invariant.
  */
 // TODO: add tests for this!!!
-// FIXME: most likly wrong because milo wrote this!!!
 size_t istrfixlen(char *istr) {
-    if (istr == NULL) {
-        return -1;
-    }
 
+    assert(istr != NULL);
 
-    int first_non_printable, length = istring_get_length(istr);
+    // TODO: indices might be wrong here!
+    int length = istring_get_length(istr);
+    int first_non_printable = length;
+
     for (int n=0; n<length; ++n) {
-        if (istr[n] < 32 && n < first_non_printable) {
+
+        if (istr[n] < (char)32 && n < first_non_printable) {
+            //printf("\nfirst non printable:%d\n", n);
             first_non_printable = n;
         }
         if (istr[n] == '\0') {
+            //puts("found");
             istring_set_length(istr, n);
-            return n-1;
+            return n;
         }
-
     }
+
     istr[first_non_printable] = '\0';
-    return first_non_printable-1;
+    istring_set_length(istr, first_non_printable);
+
+    return first_non_printable;
 }
 
 
@@ -227,9 +236,8 @@ char *istrcpy(char *dst, const char *src) {
 
     char *istr = STRING(dst);
     strcpy(istr, src);
-    istrfixlen(istr);
-
-    //printf("\ninside: %s = %s\n", istr, src);
+    istring_set_length(istr, strlen(src));
+    //istrfixlen(istr); // NOTE: didn't work because istrfixlen used the strings length witch was 0;
 
     return istr;
 }
@@ -238,7 +246,7 @@ char *istrncpy(char *dst, const char *src, size_t n) {
 
     char *istr = STRING(dst);
     strncpy(istr, src, n);
-    istrfixlen(istr);
+    istring_set_length(istr, strlen(src));
 
     return istr;
 }
