@@ -26,7 +26,10 @@ beautify:
 test: tests/unittests.c source/istring.c source/istring.h
 	mkdir -p bin
 	$(C_COMPILER) $(C_OPTIONS) tests/unittests.c source/istring.c -o bin/unittests -lcunit
-	./bin/unittests
+	# note that \x1b character is the escape character
+	./bin/unittests |\
+	sed 's/...passed/\x1b[1;32m   PASSED\x1b[m/g' |\
+	sed 's/...FAILED/\x1b[1;31m   FAILED\x1b[m/g'
 
 
 #run: main.c istring.c istring.h
