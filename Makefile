@@ -1,4 +1,3 @@
-#tmp: run
 all: test
 
 # Tex settings
@@ -10,6 +9,10 @@ GEN_EXTENSIONS = *.o *.out
 
 # SCM
 VC_PROGRAM = git
+
+# Fix test output
+TEST_PASS = 's/...passed/\x1b[1;32m   PASSED\x1b[m/g'
+TEST_FAIL = 's/...FAILED/\x1b[1;31m   FAILED\x1b[m/g'
 
 clean:
 	rm -f $(GEN_EXTENSIONS) bin/unittests *.orig
@@ -24,14 +27,7 @@ beautify:
 	astyle -A7 source/*.c source/*.h tests/*.c tests/*.h
 
 test: tests/unittests.c source/istring.c source/istring.h
-	mkdir -p bin
-	$(C_COMPILER) $(C_OPTIONS) tests/unittests.c source/istring.c -o bin/unittests -lcunit
-	# note that \x1b character is the escape character
-	./bin/unittests |\
-	sed 's/...passed/\x1b[1;32m   PASSED\x1b[m/g' |\
-	sed 's/...FAILED/\x1b[1;31m   FAILED\x1b[m/g'
+	@mkdir -p bin
+	@$(C_COMPILER) $(C_OPTIONS) tests/unittests.c source/istring.c -o bin/unittests -lcunit
+	@./bin/unittests | sed $(TEST_PASS)  | sed $(TEST_FAIL)
 
-
-#run: main.c istring.c istring.h
-#	$(C_COMPILER) $(C_OPTIONS) main.c istring.c -o main
-#	./main
