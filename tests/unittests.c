@@ -21,7 +21,7 @@ void testISTRING_MK(void)
 
     CU_ASSERT(str1 == NULL);
     CU_ASSERT(istrlen(str3) == strlen(str2));
-    CU_ASSERT(strcmp(str2, str3)  == 0);
+    CU_ASSERT_STRING_EQUAL(str2, str3);
     CU_ASSERT(str3[0]  == 'f');
     CU_ASSERT(str3[1]  == 'o');
     CU_ASSERT(str3[2]  == 'o');
@@ -60,7 +60,7 @@ void testISTRING_TO_STRING(void)
     char *str1 = istring_mk("spam");
     char *cstr = istring_to_string(str1);
 
-    CU_ASSERT(strcmp(cstr, "spam") == 0);
+    CU_ASSERT_STRING_EQUAL(cstr, "spam");
 
     istring_rm(str1);
     free(cstr);
@@ -69,39 +69,109 @@ void testISTRING_TO_STRING(void)
 void testISTRFIXLEN(void)
 {
     char *istr1 = istring_mk("babak");
-    char *istr2 = istring_mk("awesome");
-    char *istr3 = istring_mk("bannanas");
+    char *istr2 = istring_mk("want");
+    char *istr3 = istring_mk("awesome");
+    char *istr4 = istring_mk("BROCCOLLI");
 
     CU_ASSERT(istrlen(istr1) == 5);
     istr1[3] = '\0'; // make the string shorter
     CU_ASSERT(istrfixlen(istr1) == 3);
 
+    CU_ASSERT(istrlen(istr2) == 4);
+    istr2[2] = (char)1; // insert non-printable ascii character
+    CU_ASSERT(istrfixlen(istr2) == 4);
 
-    CU_ASSERT(istrlen(istr2) == 7);
-    istr2[7] = 'a'; // remove null-termination
-    CU_ASSERT(istrfixlen(istr2) == 7);
+    CU_ASSERT(istrlen(istr3) == 7);
+    istr3[7] = 'a'; // remove null-termination
+    CU_ASSERT(istrfixlen(istr3) == 7);
 
-    CU_ASSERT(istrlen(istr3) == 8);
-    istr3[4] = (char)1; // insert non-printable ascii character
-    istr2[8] = 'a';     // remove the null-termination
-    CU_ASSERT(istrfixlen(istr3) == 4);
+    CU_ASSERT(istrlen(istr4) == 9);
+    istr4[4] = (char)1; // insert non-printable ascii character
+    istr4[9] = 'a';     // remove the null-termination
+    CU_ASSERT(istrfixlen(istr4) == 4);
 
     istring_rm(istr1);
     istring_rm(istr2);
     istring_rm(istr3);
+    istring_rm(istr4);
 
+}
+
+void testISTRSLEN(void) {
+    char *str0 = istring_mk("babak");
+    char *str1 = NULL;
+    char *str2 = NULL;
+
+    CU_ASSERT(strlen(str0) == 5);
+    CU_ASSERT_PTR_NULL(str1);
+    CU_ASSERT_PTR_NULL(str2);
+
+    str1 = istrslen(str0, 7);
+    CU_ASSERT(strlen(str0) == 5);   // TODO: This is so stupid!! how can we know if we get a new string or the old one??!!!
+    CU_ASSERT(strlen(str1) == 7);
+    CU_ASSERT_STRING_EQUAL(str1, "babakkk");
+
+    str2 = istrslen(str0, 3);
+    CU_ASSERT(strlen(str0) == 3);   // TODO: this changes the given object! But why??!! specification??
+    CU_ASSERT(strlen(str2) == 3);
+    CU_ASSERT_STRING_EQUAL(str2, "bab");
+
+
+    //istring_rm(str2); // TODO: this is not a new string!!!!
+    istring_rm(str1);
+    istring_rm(str0);
 }
 
 void testISTRCAT(void)
 {
-    // You must implement you own!
-    CU_FAIL("Test not implemented yet");
+    char buffer[100];
+
+#define RESET_BUFFER() (memset(buffer, 0, sizeof(char)* 100))
+
+    RESET_BUFFER();
+    strcpy(buffer, "Hello ");
+    CU_ASSERT_STRING_EQUAL(istrcat(buffer, "World!"), "Hello World!");
+
+    RESET_BUFFER();
+    CU_ASSERT_STRING_EQUAL(istrcat(buffer, "Hello World!"), "Hello World!");
+
+    RESET_BUFFER();
+    strcpy(buffer, "Hello World!");
+    CU_ASSERT_STRING_EQUAL(istrcat(buffer, ""), "Hello World!");
+
+    RESET_BUFFER();
+    strcpy(buffer, "");
+    CU_ASSERT_STRING_EQUAL(istrcat(buffer, ""), "");
+
+#undef RESET_BUFFER
+
+    //CU_FAIL("Test not implemented yet");
+
 }
 
 void testISTRNCAT(void)
 {
-    // You must implement you own!
-    CU_FAIL("Test not implemented yet");
+    char buffer[100];
+
+#define RESET_BUFFER() (memset(buffer, 0, sizeof(char)* 100))
+
+    RESET_BUFFER();
+    strcpy(buffer, "Hello ");
+    CU_ASSERT_STRING_EQUAL(istrncat(buffer, "World!", 50), "Hello World!");
+
+    RESET_BUFFER();
+    CU_ASSERT_STRING_EQUAL(istrncat(buffer, "Hello World!", 50), "Hello World!");
+
+    RESET_BUFFER();
+    strcpy(buffer, "Hello World!");
+    CU_ASSERT_STRING_EQUAL(istrncat(buffer, "", 50), "Hello World!");
+
+    RESET_BUFFER();
+    strcpy(buffer, "");
+    CU_ASSERT_STRING_EQUAL(istrncat(buffer, "", 50), "");
+
+#undef RESET_BUFFER
+
 }
 
 void testISTRCHR(void)
@@ -175,8 +245,8 @@ void testISTRCPY(void)
 
     RESET_BUFFER();
     result = istrcpy(buffer, istr1);
-    CU_ASSERT(istrcmp(istr1, result) == 0);
-    CU_ASSERT(istrlen(istr1) == istrlen(result));
+    CU_ASSERT_STRING_EQUAL(istr1, result);
+    CU_ASSERT(strlen(istr1) == strlen(result));
 
     RESET_BUFFER();
     result = istrcpy(buffer, istr2);
@@ -201,20 +271,20 @@ void testISTRNCPY(void)
 
     RESET_BUFFER();
     result = istrncpy(buffer, istr1, 100);
-    CU_ASSERT(istrcmp(istr1, result) == 0);
+    CU_ASSERT_STRING_EQUAL(istr1, result);
     CU_ASSERT(istrlen(istr1) == istrlen(result));
 
     RESET_BUFFER();
     result = istrncpy(buffer, istr2, 100);
-    CU_ASSERT(istrcmp(istr2, result) == 0);
+    CU_ASSERT_STRING_EQUAL(istr2, result);
     CU_ASSERT(istrlen(istr2) == istrlen(result));
 
     RESET_BUFFER();
     result = istrncpy(buffer, istr3, 5);
     CU_ASSERT(istrcmp(istr3, result) > 0);
     CU_ASSERT(istrncmp(istr3, result, 5) == 0);
-    CU_ASSERT(istrlen(istr3) == istrlen(result));  // TODO: FIXME: ERROR: How can this be correct!!!!!???????!???
-    CU_FAIL("HOW THE ********************* CAN THIS BE CORRECT!!!!!!!?!?!?!!!!?!!!");
+    CU_ASSERT(istrlen(istr3) > istrlen(result));
+    CU_ASSERT(istrlen(result) == 5);
 
     istring_rm(istr1);
     istring_rm(istr2);
@@ -252,6 +322,7 @@ int main()
             (NULL == CU_add_test(pSuite1, "test of istring_rm()       ", testISTRING_RM)) ||
             (NULL == CU_add_test(pSuite1, "test of istring_to_string()", testISTRING_TO_STRING)) ||
             (NULL == CU_add_test(pSuite1, "test of istfixlen()        ", testISTRFIXLEN)) ||
+            (NULL == CU_add_test(pSuite1, "test of istslen()          ", testISTRSLEN)) ||
             (NULL == CU_add_test(pSuite1, "test of istrlen()          ", testISTRLEN))
        )
     {
@@ -260,14 +331,14 @@ int main()
     }
 
     if (
-            (NULL == CU_add_test(pSuite2, "test of istrcat() ", testISTRCAT)) ||
-            (NULL == CU_add_test(pSuite2, "test of istrncat()", testISTRNCAT)) ||
-            (NULL == CU_add_test(pSuite2, "test of istrchr() ", testISTRCHR)) ||
-            (NULL == CU_add_test(pSuite2, "test of istrrchr()", testISTRRCHR)) ||
-            (NULL == CU_add_test(pSuite2, "test of istrcmp() ", testISTRCMP)) ||
-            (NULL == CU_add_test(pSuite2, "test of istrncmp()", testISTRNCMP)) ||
-            (NULL == CU_add_test(pSuite2, "test of istrcpy() ", testISTRCPY)) ||
-            (NULL == CU_add_test(pSuite2, "test of istrncpy()", testISTRNCPY))
+            (NULL == CU_add_test(pSuite2, "test of istrcat()          ", testISTRCAT))  ||
+            (NULL == CU_add_test(pSuite2, "test of istrncat()         ", testISTRNCAT)) ||
+            (NULL == CU_add_test(pSuite2, "test of istrchr()          ", testISTRCHR))  ||
+            (NULL == CU_add_test(pSuite2, "test of istrrchr()         ", testISTRRCHR)) ||
+            (NULL == CU_add_test(pSuite2, "test of istrcmp()          ", testISTRCMP))  ||
+            (NULL == CU_add_test(pSuite2, "test of istrncmp()         ", testISTRNCMP)) ||
+            (NULL == CU_add_test(pSuite2, "test of istrcpy()          ", testISTRCPY))  ||
+            (NULL == CU_add_test(pSuite2, "test of istrncpy()         ", testISTRNCPY))
        )
     {
         CU_cleanup_registry();
