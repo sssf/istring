@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <assert.h>
 
+// TODO: Make sure we use uint32_t instead of plain int
 
 
 #define SIZE_OF_SIZE sizeof(uint32_t)
@@ -15,6 +16,8 @@
 
 typedef char istring;
 
+
+// TODO: refactor this into macros instead!
 void istring_set_length(const istring *istr, uint32_t length) {
     *(uint32_t*)START(istr) = length;
 }
@@ -28,10 +31,12 @@ uint32_t istring_get_length(const istring *istr) {
  * argument str is NULL.
  */
 char *istring_mk(const char* str) {
+
     if (str == NULL) {
         return NULL;
     }
 
+    // TODO: use calloc instead?
     // dont forget the '\0'
     size_t length = strlen(str);
     size_t alloc_size = length + 1;
@@ -106,7 +111,7 @@ size_t istrfixlen(char *istr) {
     int length = istring_get_length(istr);
     int first_non_printable = length;
 
-    for (int n=0; n<length; ++n) {
+    for (int n=0; n<=length; ++n) {
 
         if (istr[n] < (char)32 && n < first_non_printable) {
             //printf("\nfirst non printable:%d\n", n);
@@ -122,7 +127,7 @@ size_t istrfixlen(char *istr) {
     istr[first_non_printable] = '\0';
     istring_set_length(istr, first_non_printable);
 
-    return first_non_printable;
+    return istring_get_length(istr);
 }
 
 
@@ -134,7 +139,9 @@ size_t istrfixlen(char *istr) {
  * to fill the string to its given length.
  * NOTE: if istr is NULL return NULL
  */
+// FIXME: we have to change the acual object!!!
 char* istrslen(char *istr, size_t length) {
+    assert(length >= 0);
 
     if (istr == NULL) {
         return NULL;
@@ -200,7 +207,7 @@ char *istrrchr(const char *istr, int c) {
     return NULL;
 }
 
-// THE O(1) access to length doesn't help here
+// The O(1) access to length doesn't help here
 int istrcmp(const char *istr1, const char *istr2) {
     assert(istr1 != NULL);
     assert(istr2 != NULL);
@@ -246,14 +253,54 @@ char *istrncpy(char *dst, const char *src, size_t n) {
 
     char *istr = STRING(dst);
     strncpy(istr, src, n);
-    istring_set_length(istr, strlen(src));
+
+    size_t length = strlen(src);
+
+    //printf("\nlength=%d, n=%d\n", length, n);
+    if (length > n) {
+        length = n;
+    }
+
+    istring_set_length(istr, length);
 
     return istr;
 }
 
 
-char *istrcat(char *dst, const char *src) { return NULL; }
-char *istrncat(char *dst, const char *src, size_t n) { return NULL; }
+
+
+// NOTE: make sure your assertions are correct!!!!
+char *istrcat(char *dst, const char *src) {
+
+    size_t dst_len = strlen(dst);
+    size_t src_len = strlen(src);
+    size_t cat_len = dst_len + src_len;
+
+    for (int n = dst_len; n >= 0; --n) {
+        dst[n+4] = dst[n];
+    }
+    char *istr = STRING(dst);
+
+    strcat(istr, src);
+    istrslen(istr, cat_len);   // FIXME: THIS BREAKS EVERYTHING!!!!
+    return istr;
+}
+
+char *istrncat(char *dst, const char *src, size_t n) {
+
+    size_t dst_len = strlen(dst);
+    size_t src_len = strlen(src);
+
+    // shift the string 4 bytes to the right
+    for (int n = dst_len; n >= 0; --n) {
+        dst[n+4] = dst[n];
+    }
+    char *istr = STRING(dst);
+
+    strncat(istr, src, n);
+    istrslen(istr, dst_len + ((n < src_len) ? n : src_len));   // FIXME: THIS BREAKS EVERYTHING!!!!
+    return istr;
+}
 
 
 
