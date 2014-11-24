@@ -148,7 +148,7 @@ char *istrcpy(char **destination, const char *source);
 /**
  * @brief Copy a istring
  *
- * The strings may not overlap. Beware of buffer overruns! 
+ * The strings may not overlap. Beware of buffer overruns!
  * @warning If there is no null byte amoung the first n bytes of source, the string placed in dest will not be null-terminated.
  *
  * @param **destination block of memory large enough to receive the copy + 4 bytes  (breaks the encapsulation)
