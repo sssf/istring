@@ -62,7 +62,7 @@ size_t istrfixlen(char *string);
  * string. The last character of the original string will be repeated
  * to fill the string to its given length.
  *
- * @param *string set new length of this istring
+ * @param **string pointer-pointer to the string to set a new length on.
  * @param length new length to be set
  *
  * @return string with length updated to length
@@ -143,7 +143,7 @@ size_t istrlen(const char *string);
  * @param *source istring to create copy. Must be null terminated.
  * @return destination converted to istring copy of source.
  */
-char *istrcpy(char *destination, const char *source);
+char *istrcpy(char **destination, const char *source);
 
 /**
  * @brief Copy a istring
@@ -156,7 +156,7 @@ char *istrcpy(char *destination, const char *source);
  * @param n number of bytes to copy from source
  * @return destination converted to istring with at most n bytes copied from source into it.
  */
-char *istrncpy(char *destination, const char *source, size_t n);
+char *istrncpy(char **destination, const char *source, size_t n);
 
 /**
  * @brief Concatenate two strings
@@ -167,7 +167,7 @@ char *istrncpy(char *destination, const char *source, size_t n);
  * @param *source istring to append to destination
  * @return destination converted to istring with source appended to it
  */
-char *istrcat(char *destination, const char *source);
+char *istrcat(char **destination, const char *source);
 
 /**
  * @brief Concatenate two strings
@@ -180,7 +180,7 @@ char *istrcat(char *destination, const char *source);
  * @param n number of bytes to copy from source
  * @return destination converted to istring with at most n bytes of source appended to it.
  */
-char *istrncat(char *destination, const char *source, size_t n);
+char *istrncat(char **destination, const char *source, size_t n);
 
 #endif // __ISTRING_H__
 

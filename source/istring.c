@@ -241,24 +241,28 @@ size_t istrlen(const char *string) {
  * t.ex. istrcpy anropats bör man vid anropsplatsen göra dst =
  * STRING(dst) för att hoppa över längd-delen av strängen.
  */
-char *istrcpy(char *destination, const char *source) {
+char *istrcpy(char **destination, const char *source) {
 
-    IString *istring = (IString*)destination;
+    IString *istring = (IString*)*destination;
     strcpy(istring->string, source);
     istring->length = strlen(source);
 
-    return STRING(istring);
+    *destination = STRING(istring);
+
+    return *destination;
 }
 
-char *istrncpy(char *destination, const char *source, size_t n) {
+char *istrncpy(char **destination, const char *source, size_t n) {
 
-    IString *istring = (IString*)destination;
+    IString *istring = (IString*)*destination;
     strncpy(istring->string, source, n);
 
     size_t source_length = strlen(source);
     istring->length = (source_length > n) ? n : source_length;
 
-    return STRING(istring);
+    *destination = STRING(istring);
+
+    return *destination;
 }
 
 
@@ -275,24 +279,29 @@ IString *cstring_to_istring(char *cstring) {
 
 
 // NOTE: make sure your assertions are correct!!!!
-char *istrcat(char *destination, const char *source) {
+char *istrcat(char **destination, const char *source) {
 
-    IString *istring = cstring_to_istring(destination);
+    IString *istring = cstring_to_istring(*destination);
 
 
     strcat(istring->string, source);
     istring->length = strlen(istring->string);
-    return STRING(istring);
+
+    *destination = STRING(istring);
+
+    return *destination;
 }
 
 
-char *istrncat(char *destination, const char *source, size_t n) {
+char *istrncat(char **destination, const char *source, size_t n) {
 
-    IString *istring = cstring_to_istring(destination);
+    IString *istring = cstring_to_istring(*destination);
 
     strncat(istring->string, source, n);
     istring->length = strlen(istring->string);
 
-    return STRING(istring);
+    *destination = STRING(istring);
+
+    return *destination;
 }
 

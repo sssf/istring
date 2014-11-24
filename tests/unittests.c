@@ -121,23 +121,24 @@ void testISTRSLEN(void) {
 void testISTRCAT(void)
 {
     char buffer[100];
+    char *string = buffer;
 
-#define RESET_BUFFER() (memset(buffer, 0, sizeof(char)* 100))
+#define RESET_BUFFER() (memset(buffer, 0, sizeof(char)* 100)); string = buffer;
 
     RESET_BUFFER();
     strcpy(buffer, "Hello ");
-    CU_ASSERT_STRING_EQUAL(istrcat(buffer, "World!"), "Hello World!");
+    CU_ASSERT_STRING_EQUAL(istrcat(&string, "World!"), "Hello World!");
 
     RESET_BUFFER();
-    CU_ASSERT_STRING_EQUAL(istrcat(buffer, "Hello World!"), "Hello World!");
+    CU_ASSERT_STRING_EQUAL(istrcat(&string, "Hello World!"), "Hello World!");
 
     RESET_BUFFER();
     strcpy(buffer, "Hello World!");
-    CU_ASSERT_STRING_EQUAL(istrcat(buffer, ""), "Hello World!");
+    CU_ASSERT_STRING_EQUAL(istrcat(&string, ""), "Hello World!");
 
     RESET_BUFFER();
     strcpy(buffer, "");
-    CU_ASSERT_STRING_EQUAL(istrcat(buffer, ""), "");
+    CU_ASSERT_STRING_EQUAL(istrcat(&string, ""), "");
 
 #undef RESET_BUFFER
 
@@ -148,23 +149,24 @@ void testISTRCAT(void)
 void testISTRNCAT(void)
 {
     char buffer[100];
+    char *string = buffer;
 
-#define RESET_BUFFER() (memset(buffer, 0, sizeof(char)* 100))
+#define RESET_BUFFER() (memset(buffer, 0, sizeof(char)* 100)); string = buffer;
 
     RESET_BUFFER();
     strcpy(buffer, "Hello ");
-    CU_ASSERT_STRING_EQUAL(istrncat(buffer, "World!", 50), "Hello World!");
+    CU_ASSERT_STRING_EQUAL(istrncat(&string, "World!", 50), "Hello World!");
 
     RESET_BUFFER();
-    CU_ASSERT_STRING_EQUAL(istrncat(buffer, "Hello World!", 50), "Hello World!");
+    CU_ASSERT_STRING_EQUAL(istrncat(&string, "Hello World!", 50), "Hello World!");
 
     RESET_BUFFER();
     strcpy(buffer, "Hello World!");
-    CU_ASSERT_STRING_EQUAL(istrncat(buffer, "", 50), "Hello World!");
+    CU_ASSERT_STRING_EQUAL(istrncat(&string, "", 50), "Hello World!");
 
     RESET_BUFFER();
     strcpy(buffer, "");
-    CU_ASSERT_STRING_EQUAL(istrncat(buffer, "", 50), "");
+    CU_ASSERT_STRING_EQUAL(istrncat(&string, "", 50), "");
 
 #undef RESET_BUFFER
 
@@ -236,16 +238,17 @@ void testISTRCPY(void)
     char* istr2  = istring_mk("bannanas are for code-monkeys");
     char* result = NULL;
     char buffer[100];
+    char *string = buffer;
 
-#define RESET_BUFFER() (memset(buffer, 0, sizeof(char)* 100))
+#define RESET_BUFFER() (memset(buffer, 0, sizeof(char)* 100)); string = buffer;
 
     RESET_BUFFER();
-    result = istrcpy(buffer, istr1);
+    result = istrcpy(&string, istr1);
     CU_ASSERT_STRING_EQUAL(istr1, result);
     CU_ASSERT(strlen(istr1) == strlen(result));
 
     RESET_BUFFER();
-    result = istrcpy(buffer, istr2);
+    result = istrcpy(&string, istr2);
     CU_ASSERT(istrcmp(istr2, result) == 0);
     CU_ASSERT(istrlen(istr2) == istrlen(result));
 
@@ -262,21 +265,22 @@ void testISTRNCPY(void)
     char* istr3  = istring_mk("code-monkeys like bannanas");
     char* result = NULL;
     char buffer[100];
+    char *string = buffer;
 
-#define RESET_BUFFER() (memset(buffer, 0, sizeof(char)* 100))
+#define RESET_BUFFER() (memset(buffer, 0, sizeof(char)* 100)); string = buffer;
 
     RESET_BUFFER();
-    result = istrncpy(buffer, istr1, 100);
+    result = istrncpy(&string, istr1, 100);
     CU_ASSERT_STRING_EQUAL(istr1, result);
     CU_ASSERT(istrlen(istr1) == istrlen(result));
 
     RESET_BUFFER();
-    result = istrncpy(buffer, istr2, 100);
+    result = istrncpy(&string, istr2, 100);
     CU_ASSERT_STRING_EQUAL(istr2, result);
     CU_ASSERT(istrlen(istr2) == istrlen(result));
 
     RESET_BUFFER();
-    result = istrncpy(buffer, istr3, 5);
+    result = istrncpy(&string, istr3, 5);
     CU_ASSERT(istrcmp(istr3, result) > 0);
     CU_ASSERT(istrncmp(istr3, result, 5) == 0);
     CU_ASSERT(istrlen(istr3) > istrlen(result));
