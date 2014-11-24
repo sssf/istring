@@ -139,7 +139,7 @@ size_t istrlen(const char *string);
  *
  * The strings may not overlap, destination must be null terminated. Beware of buffer overruns!
  *
- * @param *destination block of memory large enough to receive the copy + 4 bytes  (breaks the encapsulation)
+ * @param **destination block of memory large enough to receive the copy + 4 bytes  (breaks the encapsulation)
  * @param *source istring to create copy. Must be null terminated.
  * @return destination converted to istring copy of source.
  */
@@ -151,7 +151,7 @@ char *istrcpy(char **destination, const char *source);
  * The strings may not overlap. Beware of buffer overruns! 
  * @warning If there is no null byte amoung the first n bytes of source, the string placed in dest will not be null-terminated.
  *
- * @param *destination block of memory large enough to receive the copy + 4 bytes  (breaks the encapsulation)
+ * @param **destination block of memory large enough to receive the copy + 4 bytes  (breaks the encapsulation)
  * @param *source istring to create copy. Must be null terminated.
  * @param n number of bytes to copy from source
  * @return destination converted to istring with at most n bytes copied from source into it.
@@ -163,7 +163,7 @@ char *istrncpy(char **destination, const char *source, size_t n);
  *
  * The strings may not overlap, source and destination must be null terminated. Beware of buffer overruns!
  *
- * @param *destination block of memory large enough to receive the result + 4 bytes  (breaks the encapsulation)
+ * @param **destination block of memory large enough to receive the result + 4 bytes  (breaks the encapsulation)
  * @param *source istring to append to destination
  * @return destination converted to istring with source appended to it
  */
@@ -175,7 +175,7 @@ char *istrcat(char **destination, const char *source);
  * The strings may not overlap, destination must be null terminated.
  * @warning If destination is not large enough, the program behavior is unpredictable.
  *
- * @param *destination block of memory large enough to receive the result + 4 bytes  (breaks the encapsulation).
+ * @param **destination block of memory large enough to receive the result + 4 bytes  (breaks the encapsulation).
  * @param *source istring to append to destination.
  * @param n number of bytes to copy from source
  * @return destination converted to istring with at most n bytes of source appended to it.

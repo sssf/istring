@@ -8,6 +8,7 @@
 
 IString* istring_alloc(size_t length) {
     assert(length >= 0);
+
     size_t size = sizeof(IString) + (sizeof(char) * (length + 1));
     IString *istring = malloc(size);
 
@@ -30,10 +31,7 @@ char *istring_mk(const char* cstring) {
     }
 
     size_t cstring_length = strlen(cstring);
-
-    // create new istring
     IString *istring = istring_alloc(cstring_length);
-
 
     if (istring == NULL) {
         return NULL;
@@ -51,10 +49,9 @@ char *istring_mk(const char* cstring) {
  * Deallocates the supplied istring.
  */
 void istring_rm(char *string) {
-    if (string == NULL) {
-        return;
+    if (string != NULL) {
+        free(START(string));
     }
-    free(START(string));
 }
 
 /*
@@ -67,9 +64,7 @@ char *istring_to_string(const char *string) {
     }
 
     IString *istring = START(string);
-
     size_t size = (istring->length + 1) * sizeof(char);
-
     char *cstring = malloc(size);
 
     if (cstring == NULL) {
@@ -98,7 +93,6 @@ size_t istrfixlen(char *string) {
     assert(string != NULL);
 
     IString *istring = START(string);
-
     int length = istring->length;
     uint32_t first_non_printable = length;
 
@@ -115,7 +109,6 @@ size_t istrfixlen(char *string) {
 
     istring->string[first_non_printable] = '\0';
     istring->length = first_non_printable;
-    //istring_set_length(istr, first_non_printable);
 
     return istring->length;
 }
@@ -131,6 +124,8 @@ size_t istrfixlen(char *string) {
  */
 // FIXME: we have to change the acual object!!!
 char* istrslen(char **string, size_t length) {
+    assert(string != NULL);
+    assert(*string != NULL);
     assert(length >= 0);
 
     if (string == NULL || *string == NULL) {
@@ -242,6 +237,8 @@ size_t istrlen(const char *string) {
  * STRING(dst) för att hoppa över längd-delen av strängen.
  */
 char *istrcpy(char **destination, const char *source) {
+    assert(destination != NULL);
+    assert(*destination != NULL);
 
     IString *istring = (IString*)*destination;
     strcpy(istring->string, source);
@@ -253,6 +250,8 @@ char *istrcpy(char **destination, const char *source) {
 }
 
 char *istrncpy(char **destination, const char *source, size_t n) {
+    assert(destination != NULL);
+    assert(*destination != NULL);
 
     IString *istring = (IString*)*destination;
     strncpy(istring->string, source, n);
@@ -280,6 +279,8 @@ IString *cstring_to_istring(char *cstring) {
 
 // NOTE: make sure your assertions are correct!!!!
 char *istrcat(char **destination, const char *source) {
+    assert(destination != NULL);
+    assert(*destination != NULL);
 
     IString *istring = cstring_to_istring(*destination);
 
@@ -294,6 +295,8 @@ char *istrcat(char **destination, const char *source) {
 
 
 char *istrncat(char **destination, const char *source, size_t n) {
+    assert(destination != NULL);
+    assert(*destination != NULL);
 
     IString *istring = cstring_to_istring(*destination);
 
