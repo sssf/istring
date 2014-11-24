@@ -105,19 +105,16 @@ void testISTRSLEN(void) {
     CU_ASSERT_PTR_NULL(str1);
     CU_ASSERT_PTR_NULL(str2);
 
-    str1 = istrslen(str0, 7);
-    CU_ASSERT(strlen(str0) == 5);   // TODO: This is so stupid!! how can we know if we get a new string or the old one??!!!
+    str1 = istrslen(&str0, 7);
+    CU_ASSERT(strlen(str0) == 7);
     CU_ASSERT(strlen(str1) == 7);
     CU_ASSERT_STRING_EQUAL(str1, "babakkk");
 
-    str2 = istrslen(str0, 3);
-    CU_ASSERT(strlen(str0) == 3);   // TODO: this changes the given object! But why??!! specification??
+    str2 = istrslen(&str0, 3);
+    CU_ASSERT(strlen(str0) == 3);
     CU_ASSERT(strlen(str2) == 3);
     CU_ASSERT_STRING_EQUAL(str2, "bab");
 
-
-    //istring_rm(str2); // TODO: this is not a new string!!!!
-    istring_rm(str1);
     istring_rm(str0);
 }
 

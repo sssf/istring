@@ -5,8 +5,6 @@
 #include <stdint.h>
 #include <assert.h>
 
-// TODO: Make sure we use uint32_t instead of plain int
-
 
 IString* istring_alloc(size_t length) {
     assert(length >= 0);
@@ -132,14 +130,14 @@ size_t istrfixlen(char *string) {
  * NOTE: if istr is NULL return NULL
  */
 // FIXME: we have to change the acual object!!!
-char* istrslen(char *string, size_t length) {
+char* istrslen(char **string, size_t length) {
     assert(length >= 0);
 
-    if (string == NULL) {
+    if (string == NULL || *string == NULL) {
         return NULL;
     }
 
-    IString *istring = START(string);
+    IString *istring = START(*string);
 
     size_t old_length = istring->length;
 
@@ -164,7 +162,10 @@ char* istrslen(char *string, size_t length) {
     // NULL terminate the string
     new_string[length] = '\0';
 
-    return istring_mk(new_string);
+    istring_rm(*string);
+    *string = istring_mk(new_string);
+
+    return (*string);
 }
 
 /*
@@ -255,40 +256,8 @@ char *istrncpy(char *destination, const char *source, size_t n) {
     strncpy(istring->string, source, n);
 
     size_t source_length = strlen(source);
-
-/* TODO: ask about milos opinion on this!
-//====================================================
-//====================================================
-
-    if (source_length > n) {
-        source_length = n;
-    }
-
-    istring->length = source_length;
-
-//====================================================
-
-    istring->length = source_length;
-
-    if (source_length > n) {
-        istring->length = n;
-    }
-
-
-//====================================================
-
-    if (source_length > n) {
-        istring->length = n;
-    } else {
-        istring->length;
-    }
-*/
-//====================================================
-
     istring->length = (source_length > n) ? n : source_length;
 
-//====================================================
-//====================================================
     return STRING(istring);
 }
 

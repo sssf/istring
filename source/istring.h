@@ -67,7 +67,7 @@ size_t istrfixlen(char *string);
  *
  * @return string with length updated to length
  */
-char* istrslen(char *string, size_t length);
+char* istrslen(char **string, size_t length);
 
 /*
  * For definitions, see the manual page of respective function on the
@@ -131,13 +131,6 @@ int istrncmp(const char *string1, const char *string2, size_t n);
  */
 size_t istrlen(const char *string);
 
-/*
- * I nedanstående funktioner är dst en pekare till en vanlig
- * sträng och inte en istring. Däremot skall minnesutrymmet
- * "konverteras" till en istring av funktionerna, d.v.s. efter att
- * t.ex. istrcpy anropats bör man vid anropsplatsen göra dst =
- * STRING(dst) för att hoppa över längd-delen av strängen.
-*/
 
 // TODO: make destination into a double pointer!
 
