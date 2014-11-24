@@ -1,4 +1,0 @@
-
-
-* use char double-pointer in istrslen to fix problem with allocations and deallocations
-* Update README.md to reflect the project 
