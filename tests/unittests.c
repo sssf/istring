@@ -1,8 +1,8 @@
 #include <string.h>
+#include <stdlib.h>
 #include <CUnit/Basic.h>
 #include "../source/istring.h"
-//#include "../source/istring_rep.h" // TODO: should we create a header containing the istring representation?
-#include <stdlib.h>
+#include "../source/istring_rep.h"
 
 
 
@@ -45,9 +45,8 @@ void testISTRLEN(void)
 
     CU_ASSERT(istrlen(str1) == 4);
     CU_ASSERT(istrlen(str2) == 6);
-    // TODO: consider moving istring representation into string_rep.h
-    //START(str2)->length = 3;
-    //CU_ASSERT(istrlen(str2) == 3);
+    START(str2)->length = 3;
+    CU_ASSERT(istrlen(str2) == 3);
     CU_ASSERT(strlen(str1) == 4);
     CU_ASSERT(strlen(str2) == 6);
 

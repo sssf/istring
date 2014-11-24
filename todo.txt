@@ -1,45 +1,4 @@
 
 
-
-[] Replace string compare with CU_ASSERT_STRING_EQUAL
-[] Refacor code, don't forget about memory allocations
-
-[] Start uning string_rep.h
-
-
-
-
-New Todo
-===========================================================
-
-Se till så att vi får gruppmöte på måndag istället för fredag
-
-* use char ** in istrslen to fix problem with allocations and deallocations
-* remove test for START and STRING macros!
-
-
-istring.h
----------
-
-* document all functions properly
-
-
-istring.c
----------
-
-* general cleanup
-*
-
-
-
-unittest.c
-----------
-
-* some tests missing
-* make tests pass
-
-
-istring_rep.h
--------------
-
-* use this?
+* use char double-pointer in istrslen to fix problem with allocations and deallocations
+* Update README.md to reflect the project 

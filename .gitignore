@@ -30,4 +30,5 @@
 
 bin/unittests
 bin/*
+documentation/*
 tags

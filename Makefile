@@ -1,6 +1,6 @@
 all: test
 
-# Tex settings
+# Compiler settings
 C_COMPILER   = gcc
 C_OPTIONS    = -ggdb -Wall -std=c99
 
@@ -16,6 +16,7 @@ TEST_FAIL = 's/...FAILED/\x1b[1;31m   FAILED\x1b[m/g'
 
 clean:
 	rm -f $(GEN_EXTENSIONS) bin/unittests *.orig
+	rm -fr documentation/*
 
 commit: beautify clean test
 	$(VC_PROGRAM) pull; $(VC_PROGRAM) commit; $(VC_PROGRAM) push
@@ -26,8 +27,19 @@ commit: beautify clean test
 beautify:
 	astyle -A7 source/*.c source/*.h tests/*.c tests/*.h
 
+documentation:
+	@mkdir -p documentation
+	@doxygen Doxyfile
+
+valgrind: test
+	valgrind --leak-check=full ./bin/unittests
+
 test: tests/unittests.c source/istring.c source/istring.h
 	@mkdir -p bin
 	@$(C_COMPILER) $(C_OPTIONS) tests/unittests.c source/istring.c -o bin/unittests -lcunit
 	@./bin/unittests | sed $(TEST_PASS)  | sed $(TEST_FAIL)
 
+# make <leader>tt work
+test_istring: test
+
+.PHONY: valgrind documentation

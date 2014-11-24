@@ -1,4 +1,5 @@
 #include "istring.h"
+#include "istring_rep.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
@@ -7,22 +8,16 @@
 // TODO: Make sure we use uint32_t instead of plain int
 
 
-#define SIZE_OF_SIZE sizeof(uint32_t)
-#define START(ptr)  (ptr-SIZE_OF_SIZE)
-#define STRING(ptr) (ptr+SIZE_OF_SIZE)
+IString* istring_alloc(size_t length) {
+    assert(length >= 0);
+    size_t size = sizeof(IString) + (sizeof(char) * (length + 1));
+    IString *istring = malloc(size);
 
+    if (istring != NULL) {
+        memset(istring, 0, size);
+    }
 
-//#define STRING_SIZE(str) (*(uint32_t*)START(str))
-
-typedef char istring;
-
-
-// TODO: refactor this into macros instead!
-void istring_set_length(const istring *istr, uint32_t length) {
-    *(uint32_t*)START(istr) = length;
-}
-uint32_t istring_get_length(const istring *istr) {
-    return *(uint32_t*)START(istr);
+    return istring;
 }
 
 /*
@@ -30,65 +25,63 @@ uint32_t istring_get_length(const istring *istr) {
  * string. Returns NULL if out of memory. Returns NULL string if
  * argument str is NULL.
  */
-char *istring_mk(const char* str) {
+char *istring_mk(const char* cstring) {
 
-    if (str == NULL) {
+    if (cstring == NULL) {
         return NULL;
     }
 
-    // TODO: use calloc instead?
-    // dont forget the '\0'
-    size_t length = strlen(str);
-    size_t alloc_size = length + 1;
+    size_t cstring_length = strlen(cstring);
 
-    // allocate memory and clear it
-    char *istr = malloc(SIZE_OF_SIZE + (alloc_size*sizeof(char)));
-    memset(istr, 0, SIZE_OF_SIZE + (alloc_size*sizeof(char)));
+    // create new istring
+    IString *istring = istring_alloc(cstring_length);
 
-    if (istr == NULL) {
+
+    if (istring == NULL) {
         return NULL;
     }
 
-    istr = STRING(istr);
+    istring->length = cstring_length;
 
-    istring_set_length(istr, length);
-    strcpy(istr, str);
-    istr[length] = '\0';
+    strcpy(istring->string, cstring);
+    istring->string[cstring_length] = '\0';
 
-    return istr;
+    return STRING(istring);
 }
 
 /*
  * Deallocates the supplied istring.
  */
-void istring_rm(char *istr) {
-    if (istr == NULL) {
+void istring_rm(char *string) {
+    if (string == NULL) {
         return;
     }
-    free(START(istr));
+    free(START(string));
 }
 
 /*
  * Returns a standard null terminated char* representation of the
  * supplied istring. Returns NULL if out of memory.
  */
-char *istring_to_string(const char *istr) {
-    if (istr == NULL) {
+char *istring_to_string(const char *string) {
+    if (string == NULL) {
         return NULL;
     }
 
-    size_t size = (istring_get_length(istr) + 1) * sizeof(char);
+    IString *istring = START(string);
 
-    char *cstr = malloc(size);
+    size_t size = (istring->length + 1) * sizeof(char);
 
-    if (cstr == NULL) {
+    char *cstring = malloc(size);
+
+    if (cstring == NULL) {
         return NULL;
     }
 
-    memset(cstr, 0, size);
-    strcpy(cstr, istr);
+    memset(cstring, 0, size);
+    strcpy(cstring, istring->string);
 
-    return cstr;
+    return cstring;
 }
 
 /*
@@ -103,31 +96,30 @@ char *istring_to_string(const char *istr) {
  * regular C strings, to reestablish the length invariant.
  */
 // TODO: add tests for this!!!
-size_t istrfixlen(char *istr) {
+size_t istrfixlen(char *string) {
+    assert(string != NULL);
 
-    assert(istr != NULL);
+    IString *istring = START(string);
 
-    // TODO: indices might be wrong here!
-    int length = istring_get_length(istr);
-    int first_non_printable = length;
+    int length = istring->length;
+    uint32_t first_non_printable = length;
 
-    for (int n=0; n<=length; ++n) {
+    for (uint32_t n=0; n<=length; ++n) {
 
-        if (istr[n] < (char)32 && n < first_non_printable) {
-            //printf("\nfirst non printable:%d\n", n);
+        if (istring->string[n] < (char)32 && n < first_non_printable) {
             first_non_printable = n;
         }
-        if (istr[n] == '\0') {
-            //puts("found");
-            istring_set_length(istr, n);
+        if (istring->string[n] == '\0') {
+            istring->length = n;
             return n;
         }
     }
 
-    istr[first_non_printable] = '\0';
-    istring_set_length(istr, first_non_printable);
+    istring->string[first_non_printable] = '\0';
+    istring->length = first_non_printable;
+    //istring_set_length(istr, first_non_printable);
 
-    return istring_get_length(istr);
+    return istring->length;
 }
 
 
@@ -140,30 +132,33 @@ size_t istrfixlen(char *istr) {
  * NOTE: if istr is NULL return NULL
  */
 // FIXME: we have to change the acual object!!!
-char* istrslen(char *istr, size_t length) {
+char* istrslen(char *string, size_t length) {
     assert(length >= 0);
 
-    if (istr == NULL) {
+    if (string == NULL) {
         return NULL;
     }
 
-    size_t old_length = istring_get_length(istr);
+    IString *istring = START(string);
+
+    size_t old_length = istring->length;
 
     // new length <= old length
     if (length <= old_length) {
-        istring_set_length(istr, length);
-        istr[length] = '\0';
-        return istr;
+        //istring_set_length(istr, length);
+        istring->length = length;
+        istring->string[length] = '\0';
+        return STRING(istring);
     }
 
     // new length > old length
     char new_string[length+1];
-    for (int n=0; n < length; ++n) {
+    for (uint32_t n=0; n < length; ++n) {
         if (n < old_length) {
-            new_string[n] = istr[n];
+            new_string[n] = istring->string[n];
         }
         else {
-            new_string[n] = istr[old_length-1];
+            new_string[n] = istring->string[old_length-1];
         }
     }
     // NULL terminate the string
@@ -180,27 +175,31 @@ char* istrslen(char *istr, size_t length) {
  * improve the implementations if the string.h equivalents and use
  * that to guide your implementations!
  */
-char *istrchr(const char *istr, int c) {
-    assert(istr != NULL);
+char *istrchr(const char *string, int c) {
+    assert(string != NULL);
+
+    IString *istring = START(string);
 
     int n = 0;
-    int length = istring_get_length(istr);
+    int length = istring->length;
     while (n <= length) {
-        if (istr[n] == c) {
-            return (char*)&istr[n];
+        if (istring->string[n] == c) {
+            return (char*)&(istring->string[n]);
         }
         ++n;
     }
     return NULL;
 }
 // TODO: YES O(1) access to the length helps
-char *istrrchr(const char *istr, int c) {
-    assert(istr != NULL);
+char *istrrchr(const char *string, int c) {
+    assert(string != NULL);
 
-    int n = istring_get_length(istr);
+    IString *istring = START(string);
+
+    int n = istring->length;
     while (n >= 0) {
-        if (istr[n] == c) {
-            return (char*)&istr[n];
+        if (istring->string[n] == c) {
+            return (char*)&(istring->string[n]);
         }
         --n;
     }
@@ -208,18 +207,18 @@ char *istrrchr(const char *istr, int c) {
 }
 
 // The O(1) access to length doesn't help here
-int istrcmp(const char *istr1, const char *istr2) {
-    assert(istr1 != NULL);
-    assert(istr2 != NULL);
+int istrcmp(const char *string1, const char *string2) {
+    assert(string1 != NULL);
+    assert(string2 != NULL);
 
-    return strcmp(istr1, istr2);
+    return strcmp(string1, string2);
 }
 
-int istrncmp(const char *istr1, const char *istr2, size_t n) {
-    assert(istr1 != NULL);
-    assert(istr2 != NULL);
+int istrncmp(const char *string1, const char *string2, size_t n) {
+    assert(string1 != NULL);
+    assert(string2 != NULL);
 
-    return strncmp(istr1, istr2, n);
+    return strncmp(string1, string2, n);
 }
 
 /* TODO: fix documentation
@@ -227,9 +226,11 @@ int istrncmp(const char *istr1, const char *istr2, size_t n) {
  * The function calculates the length of the string istr, excluding the terminating null byte ('\0').
  * returns the number of bytes in the string istr.
  */
-size_t istrlen(const char *istr) {
-    assert(istr != NULL);
-    return istring_get_length(istr);
+size_t istrlen(const char *string) {
+    assert(string != NULL);
+    IString *istring = START(string);
+
+    return istring->length;
 }
 
 /*
@@ -239,71 +240,90 @@ size_t istrlen(const char *istr) {
  * t.ex. istrcpy anropats bör man vid anropsplatsen göra dst =
  * STRING(dst) för att hoppa över längd-delen av strängen.
  */
-char *istrcpy(char *dst, const char *src) {
+char *istrcpy(char *destination, const char *source) {
 
-    char *istr = STRING(dst);
-    strcpy(istr, src);
-    istring_set_length(istr, strlen(src));
-    //istrfixlen(istr); // NOTE: didn't work because istrfixlen used the strings length witch was 0;
+    IString *istring = (IString*)destination;
+    strcpy(istring->string, source);
+    istring->length = strlen(source);
 
-    return istr;
+    return STRING(istring);
 }
 
-char *istrncpy(char *dst, const char *src, size_t n) {
+char *istrncpy(char *destination, const char *source, size_t n) {
 
-    char *istr = STRING(dst);
-    strncpy(istr, src, n);
+    IString *istring = (IString*)destination;
+    strncpy(istring->string, source, n);
 
-    size_t length = strlen(src);
+    size_t source_length = strlen(source);
 
-    //printf("\nlength=%d, n=%d\n", length, n);
-    if (length > n) {
-        length = n;
+/* TODO: ask about milos opinion on this!
+//====================================================
+//====================================================
+
+    if (source_length > n) {
+        source_length = n;
     }
 
-    istring_set_length(istr, length);
+    istring->length = source_length;
 
-    return istr;
+//====================================================
+
+    istring->length = source_length;
+
+    if (source_length > n) {
+        istring->length = n;
+    }
+
+
+//====================================================
+
+    if (source_length > n) {
+        istring->length = n;
+    } else {
+        istring->length;
+    }
+*/
+//====================================================
+
+    istring->length = (source_length > n) ? n : source_length;
+
+//====================================================
+//====================================================
+    return STRING(istring);
 }
 
 
+
+
+IString *cstring_to_istring(char *cstring) {
+    size_t cstring_length = strlen(cstring);
+    for (int n = cstring_length; n >= 0; --n) {
+        cstring[n+4] = cstring[n];
+    }
+
+    return ((IString*)cstring);
+}
 
 
 // NOTE: make sure your assertions are correct!!!!
-char *istrcat(char *dst, const char *src) {
+char *istrcat(char *destination, const char *source) {
 
-    size_t dst_len = strlen(dst);
-    size_t src_len = strlen(src);
-    size_t cat_len = dst_len + src_len;
+    IString *istring = cstring_to_istring(destination);
 
-    for (int n = dst_len; n >= 0; --n) {
-        dst[n+4] = dst[n];
-    }
-    char *istr = STRING(dst);
 
-    strcat(istr, src);
-    istrslen(istr, cat_len);   // FIXME: THIS BREAKS EVERYTHING!!!!
-    return istr;
-}
-
-char *istrncat(char *dst, const char *src, size_t n) {
-
-    size_t dst_len = strlen(dst);
-    size_t src_len = strlen(src);
-
-    // shift the string 4 bytes to the right
-    for (int n = dst_len; n >= 0; --n) {
-        dst[n+4] = dst[n];
-    }
-    char *istr = STRING(dst);
-
-    strncat(istr, src, n);
-    istrslen(istr, dst_len + ((n < src_len) ? n : src_len));   // FIXME: THIS BREAKS EVERYTHING!!!!
-    return istr;
+    strcat(istring->string, source);
+    istring->length = strlen(istring->string);
+    return STRING(istring);
 }
 
 
+char *istrncat(char *destination, const char *source, size_t n) {
 
+    IString *istring = cstring_to_istring(destination);
 
+    strncat(istring->string, source, n);
+    istring->length = strlen(istring->string);
 
-// TODO: #undef our macros
+    return STRING(istring);
+}
+
